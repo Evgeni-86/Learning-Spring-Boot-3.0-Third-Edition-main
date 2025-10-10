@@ -1,26 +1,69 @@
 package com.springbootlearning.learningspringboot3;
 
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
+import jakarta.annotation.PostConstruct;
+import org.springframework.data.domain.Example;
+import org.springframework.data.domain.ExampleMatcher;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 @Service
 public class VideoService {
 
-  private List<Video> videos = List.of( //
-    new Video("Need HELP with your SPRING BOOT 3 App?"), //
-    new Video("Don't do THIS to your own CODE!"), //
-    new Video("SECRETS to fix BROKEN CODE!"));
+    private VideoRepository videoRepository;
 
-  public List<Video> getVideos() {
-    return videos;
-  }
+    public VideoService(VideoRepository videoRepository) {
+        this.videoRepository = videoRepository;
+    }
 
-  public Video create(Video newVideo) {
-    List<Video> extend = new ArrayList<>(videos);
-    extend.add(newVideo);
-    this.videos = List.copyOf(extend);
-    return newVideo;
-  }
+    public List<VideoEntity> getVideos() {
+        return videoRepository.findAll();
+    }
+
+    public VideoEntity create(NewVideo newVideo) {
+        return videoRepository.saveAndFlush(new VideoEntity(newVideo.name(), newVideo.description()));
+    }
+
+    public List<VideoEntity> search(VideoSearch videoSearch) {
+        if (StringUtils.hasText(videoSearch.name())
+                && StringUtils.hasText(videoSearch.description())) {
+            return videoRepository
+                    .findByNameContainsOrDescriptionContainsAllIgnoreCase(
+                            videoSearch.name(), videoSearch.description());
+        }
+
+        if (StringUtils.hasText(videoSearch.name())) {
+            return videoRepository.findByNameContainsIgnoreCase(videoSearch.name());
+        }
+
+        if (StringUtils.hasText(videoSearch.description())) {
+            return videoRepository.findByDescriptionContainsIgnoreCase(videoSearch.description());
+        }
+
+        return Collections.emptyList();
+    }
+
+    public List<VideoEntity> search(UniversalSearch search) {
+        VideoEntity probe = new VideoEntity();
+        if (StringUtils.hasText(search.value())) {
+            probe.setName(search.value());
+            probe.setDescription(search.value());
+        }
+        Example<VideoEntity> example = Example.of(probe, ExampleMatcher.matchingAny()
+                .withIgnoreCase()
+                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING));
+        return videoRepository.findAll(example);
+    }
+
+    @PostConstruct
+    void initDatabase() {
+        videoRepository.save(new VideoEntity("Need HELP with your SPRING BOOT 3 App?",
+                "SPRING BOOT 3 will only speed things up and make it super SIMPLE to serve templates and raw data."));
+        videoRepository.save(new VideoEntity("Don't do THIS to your own CODE!",
+                "As a pro developer, never ever EVER do this to your code. Because you'll ultimately be doing it to YOURSELF!"));
+        videoRepository.save(new VideoEntity("SECRETS to fix BROKEN CODE!",
+                "Discover ways to not only debug your code, but to regain your confidence and get back in the game as a software developer."));
+    }
 }
