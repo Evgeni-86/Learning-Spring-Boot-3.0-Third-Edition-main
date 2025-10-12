@@ -32,10 +32,9 @@ public class SecurityConfig {
                                 .requestMatchers("/", "/search").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/api/**").authenticated()
                                 .requestMatchers("/admin").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.POST, "/new-video", "/api/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.POST, "/new-video", "/delete/**", "/api/**").hasRole("ADMIN")
                                 .anyRequest().denyAll()
                 )
-                .csrf(csrf -> csrf.disable())
                 .formLogin(Customizer.withDefaults())
                 .httpBasic(Customizer.withDefaults());
         return http.build();

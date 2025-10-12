@@ -1,11 +1,11 @@
 package com.springbootlearning.learningspringboot3;
 
-import java.util.Collections;
 import java.util.List;
 
 import jakarta.annotation.PostConstruct;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -26,35 +26,27 @@ public class VideoService {
         return videoRepository.saveAndFlush(new VideoEntity(newVideo.name(), newVideo.description()));
     }
 
-    public List<VideoEntity> search(VideoSearch videoSearch) {
-        if (StringUtils.hasText(videoSearch.name())
-                && StringUtils.hasText(videoSearch.description())) {
-            return videoRepository
-                    .findByNameContainsOrDescriptionContainsAllIgnoreCase(
-                            videoSearch.name(), videoSearch.description());
-        }
-
-        if (StringUtils.hasText(videoSearch.name())) {
-            return videoRepository.findByNameContainsIgnoreCase(videoSearch.name());
-        }
-
-        if (StringUtils.hasText(videoSearch.description())) {
-            return videoRepository.findByDescriptionContainsIgnoreCase(videoSearch.description());
-        }
-
-        return Collections.emptyList();
-    }
-
-    public List<VideoEntity> search(UniversalSearch search) {
+    public List<VideoEntity> search(Search search) {
         VideoEntity probe = new VideoEntity();
         if (StringUtils.hasText(search.value())) {
             probe.setName(search.value());
             probe.setDescription(search.value());
         }
-        Example<VideoEntity> example = Example.of(probe, ExampleMatcher.matchingAny()
-                .withIgnoreCase()
-                .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING));
+        Example<VideoEntity> example = Example.of(probe,
+                ExampleMatcher.matchingAny()
+                        .withIgnoreCase()
+                        .withStringMatcher(ExampleMatcher.StringMatcher.CONTAINING));
         return videoRepository.findAll(example);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public void delete(Long videoId) {
+        videoRepository.findById(videoId)
+                .map(videoEntity -> {
+                    videoRepository.delete(videoEntity);
+                    return true;
+                })
+                .orElseThrow(() -> new RuntimeException("No video at " + videoId));
     }
 
     @PostConstruct
