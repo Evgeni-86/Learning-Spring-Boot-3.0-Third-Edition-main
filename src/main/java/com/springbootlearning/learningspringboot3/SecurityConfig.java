@@ -1,45 +1,32 @@
 package com.springbootlearning.learningspringboot3;
 
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProvider;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClientProviderBuilder;
+import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
+import org.springframework.security.oauth2.client.web.DefaultOAuth2AuthorizedClientManager;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
 
-@EnableMethodSecurity
 @Configuration
 public class SecurityConfig {
-
     @Bean
-    CommandLineRunner initUsers(UserManagementRepository repository) {
-        return args -> {
-            repository.save(new UserAccount("alice", "password", "ROLE_USER"));
-            repository.save(new UserAccount("bob", "password", "ROLE_USER"));
-            repository.save(new UserAccount("admin", "password", "ROLE_ADMIN"));
-        };
-    }
+    public OAuth2AuthorizedClientManager clientManager(ClientRegistrationRepository clientRegRepo,
+                                                       OAuth2AuthorizedClientRepository authClientRepo) {
 
-    @Bean
-    UserDetailsService userService(UserRepository repo) {
-        return username -> repo.findByUsername(username).asUser();
-    }
+        OAuth2AuthorizedClientProvider clientProvider =
+                OAuth2AuthorizedClientProviderBuilder.builder()
+                        .authorizationCode()
+                        .refreshToken()
+                        .clientCredentials()
+                        .build();
 
-    @Bean
-    SecurityFilterChain configureSecurity(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(authorize ->
-                        authorize.requestMatchers("/login").permitAll()
-                                .requestMatchers("/", "/search").authenticated()
-                                .requestMatchers(HttpMethod.GET, "/api/**").authenticated()
-                                .requestMatchers("/admin").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.POST, "/new-video", "/delete/**", "/api/**").authenticated()
-                                .anyRequest().denyAll()
-                )
-                .formLogin(Customizer.withDefaults())
-                .httpBasic(Customizer.withDefaults());
-        return http.build();
+        DefaultOAuth2AuthorizedClientManager clientManager =
+                new DefaultOAuth2AuthorizedClientManager(
+                        clientRegRepo, authClientRepo);
+
+        clientManager.setAuthorizedClientProvider(clientProvider);
+        return clientManager;
     }
 }
