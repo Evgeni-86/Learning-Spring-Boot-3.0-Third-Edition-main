@@ -5,17 +5,20 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.web.SecurityFilterChain;
 
+@EnableMethodSecurity
 @Configuration
 public class SecurityConfig {
 
     @Bean
     CommandLineRunner initUsers(UserManagementRepository repository) {
         return args -> {
-            repository.save(new UserAccount("user", "password", "ROLE_USER"));
+            repository.save(new UserAccount("alice", "password", "ROLE_USER"));
+            repository.save(new UserAccount("bob", "password", "ROLE_USER"));
             repository.save(new UserAccount("admin", "password", "ROLE_ADMIN"));
         };
     }
@@ -32,7 +35,7 @@ public class SecurityConfig {
                                 .requestMatchers("/", "/search").authenticated()
                                 .requestMatchers(HttpMethod.GET, "/api/**").authenticated()
                                 .requestMatchers("/admin").hasRole("ADMIN")
-                                .requestMatchers(HttpMethod.POST, "/new-video", "/delete/**", "/api/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.POST, "/new-video", "/delete/**", "/api/**").authenticated()
                                 .anyRequest().denyAll()
                 )
                 .formLogin(Customizer.withDefaults())

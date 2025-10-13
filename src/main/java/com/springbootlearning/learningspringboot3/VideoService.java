@@ -5,7 +5,6 @@ import java.util.List;
 import jakarta.annotation.PostConstruct;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -22,8 +21,8 @@ public class VideoService {
         return videoRepository.findAll();
     }
 
-    public VideoEntity create(NewVideo newVideo) {
-        return videoRepository.saveAndFlush(new VideoEntity(newVideo.name(), newVideo.description()));
+    public VideoEntity create(NewVideo newVideo, String username) {
+        return videoRepository.saveAndFlush(new VideoEntity(username, newVideo.name(), newVideo.description()));
     }
 
     public List<VideoEntity> search(Search search) {
@@ -39,7 +38,6 @@ public class VideoService {
         return videoRepository.findAll(example);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     public void delete(Long videoId) {
         videoRepository.findById(videoId)
                 .map(videoEntity -> {
@@ -51,11 +49,11 @@ public class VideoService {
 
     @PostConstruct
     void initDatabase() {
-        videoRepository.save(new VideoEntity("Need HELP with your SPRING BOOT 3 App?",
+        videoRepository.save(new VideoEntity("alice", "Need HELP with your SPRING BOOT 3 App?",
                 "SPRING BOOT 3 will only speed things up and make it super SIMPLE to serve templates and raw data."));
-        videoRepository.save(new VideoEntity("Don't do THIS to your own CODE!",
+        videoRepository.save(new VideoEntity("alice", "Don't do THIS to your own CODE!",
                 "As a pro developer, never ever EVER do this to your code. Because you'll ultimately be doing it to YOURSELF!"));
-        videoRepository.save(new VideoEntity("SECRETS to fix BROKEN CODE!",
+        videoRepository.save(new VideoEntity("bob", "SECRETS to fix BROKEN CODE!",
                 "Discover ways to not only debug your code, but to regain your confidence and get back in the game as a software developer."));
     }
 }
