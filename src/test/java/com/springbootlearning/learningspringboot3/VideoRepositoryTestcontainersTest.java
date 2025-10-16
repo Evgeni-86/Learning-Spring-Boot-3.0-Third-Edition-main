@@ -4,6 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase.*;
 import static com.springbootlearning.learningspringboot3.VideoRepositoryTestcontainersTest.*;
 
+import com.springbootlearning.learningspringboot3.config.TestConfig;
+import com.springbootlearning.learningspringboot3.entity.VideoEntity;
+import com.springbootlearning.learningspringboot3.repository.VideoRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +14,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.testcontainers.containers.PostgreSQLContainer;
@@ -23,6 +27,7 @@ import java.util.List;
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = Replace.NONE)
 @ContextConfiguration(initializers = DataSourceInitializer.class)
+@Import(TestConfig.class)
 public class VideoRepositoryTestcontainersTest {
 
     @Autowired
@@ -41,7 +46,7 @@ public class VideoRepositoryTestcontainersTest {
                     "spring.datasource.url=" + database.getJdbcUrl(),
                     "spring.datasource.username=" + database.getUsername(),
                     "spring.datasource.password=" + database.getPassword(),
-                    "spring.jpa.hibernate.ddl-auto=create-drop");
+                    "spring.jpa.hibernate.ddl-auto=create");
         }
     }
 

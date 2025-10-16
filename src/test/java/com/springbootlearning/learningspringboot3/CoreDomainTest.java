@@ -1,5 +1,6 @@
 package com.springbootlearning.learningspringboot3;
 
+import com.springbootlearning.learningspringboot3.entity.VideoEntity;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;

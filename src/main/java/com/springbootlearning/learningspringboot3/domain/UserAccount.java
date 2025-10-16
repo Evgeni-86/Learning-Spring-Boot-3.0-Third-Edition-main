@@ -1,4 +1,4 @@
-package com.springbootlearning.learningspringboot3;
+package com.springbootlearning.learningspringboot3.domain;
 
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;

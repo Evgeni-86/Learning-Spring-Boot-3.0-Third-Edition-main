@@ -1,7 +1,11 @@
-package com.springbootlearning.learningspringboot3;
+package com.springbootlearning.learningspringboot3.service;
 
 import java.util.List;
 
+import com.springbootlearning.learningspringboot3.dto.NewVideo;
+import com.springbootlearning.learningspringboot3.dto.Search;
+import com.springbootlearning.learningspringboot3.entity.VideoEntity;
+import com.springbootlearning.learningspringboot3.repository.VideoRepository;
 import jakarta.annotation.PostConstruct;
 import org.springframework.data.domain.Example;
 import org.springframework.data.domain.ExampleMatcher;

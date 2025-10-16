@@ -1,5 +1,6 @@
-package com.springbootlearning.learningspringboot3;
+package com.springbootlearning.learningspringboot3.repository;
 
+import com.springbootlearning.learningspringboot3.entity.VideoEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.security.access.prepost.PreAuthorize;

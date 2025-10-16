@@ -7,14 +7,20 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import com.springbootlearning.learningspringboot3.config.TestConfig;
+import com.springbootlearning.learningspringboot3.dto.NewVideo;
+import com.springbootlearning.learningspringboot3.service.VideoService;
+import com.springbootlearning.learningspringboot3.web.HomeController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = HomeController.class)
+@Import(TestConfig.class)
 public class HomeControllerTest {
 
     @Autowired

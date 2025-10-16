@@ -6,12 +6,15 @@ import static org.mockito.BDDMockito.*;
 import java.util.List;
 import java.util.Optional;
 
+import com.springbootlearning.learningspringboot3.dto.NewVideo;
+import com.springbootlearning.learningspringboot3.entity.VideoEntity;
+import com.springbootlearning.learningspringboot3.repository.VideoRepository;
+import com.springbootlearning.learningspringboot3.service.VideoService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.Example;
 
 @ExtendWith(MockitoExtension.class)
 public class VideoServiceTest {

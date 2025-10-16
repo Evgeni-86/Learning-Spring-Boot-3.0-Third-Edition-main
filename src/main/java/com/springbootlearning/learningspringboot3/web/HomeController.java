@@ -1,5 +1,10 @@
-package com.springbootlearning.learningspringboot3;
+package com.springbootlearning.learningspringboot3.web;
 
+import com.springbootlearning.learningspringboot3.config.AppConfig;
+import com.springbootlearning.learningspringboot3.dto.NewVideo;
+import com.springbootlearning.learningspringboot3.dto.Search;
+import com.springbootlearning.learningspringboot3.entity.VideoEntity;
+import com.springbootlearning.learningspringboot3.service.VideoService;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -13,9 +18,11 @@ import java.util.List;
 @Controller
 public class HomeController {
 
+    private final AppConfig appConfig;
     private final VideoService videoService;
 
-    public HomeController(VideoService videoService) {
+    public HomeController(AppConfig appConfig, VideoService videoService) {
+        this.appConfig = appConfig;
         this.videoService = videoService;
     }
 
@@ -23,6 +30,8 @@ public class HomeController {
     public String index(Model model, Authentication authentication) {
         model.addAttribute("videos", videoService.getVideos());
         model.addAttribute("authentication", authentication);
+        model.addAttribute("header", appConfig.header());
+        model.addAttribute("intro", appConfig.intro());
         return "index";
     }
 

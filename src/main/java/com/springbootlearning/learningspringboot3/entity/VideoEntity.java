@@ -1,11 +1,11 @@
-package com.springbootlearning.learningspringboot3;
+package com.springbootlearning.learningspringboot3.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 
 @Entity
-class VideoEntity {
+public class VideoEntity {
 
     private @Id
     @GeneratedValue Long id;
@@ -13,11 +13,11 @@ class VideoEntity {
     private String name;
     private String description;
 
-    protected VideoEntity() {
+    public VideoEntity() {
         this(null, null, null);
     }
 
-    VideoEntity(String username, String name, String description) {
+    public VideoEntity(String username, String name, String description) {
         this.id = null;
         this.username = username;
         this.description = description;
