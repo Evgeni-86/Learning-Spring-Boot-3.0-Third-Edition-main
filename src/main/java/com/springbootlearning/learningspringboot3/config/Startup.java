@@ -3,18 +3,43 @@ package com.springbootlearning.learningspringboot3.config;
 import com.springbootlearning.learningspringboot3.domain.Employee;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
+import reactor.test.StepVerifier;
 
-import static com.springbootlearning.learningspringboot3.web.ApiController.DATABASE;
 
-@Component
+@Configuration
 public class Startup {
+
     @Bean
-    CommandLineRunner initDatabase() {
+    CommandLineRunner initDatabase(R2dbcEntityTemplate template) {
         return args -> {
-            DATABASE.put("Frodo Baggins", new Employee("Frodo Baggins", "ring bearer"));
-            DATABASE.put("Samwise Gamgee", new Employee("Samwise Gamgee", "gardener"));
-            DATABASE.put("Bilbo Baggis", new Employee("Bilbo Baggins", "burglar"));
+            template.getDatabaseClient()
+                    .sql("CREATE TABLE EMPLOYEE (" +
+                            "id IDENTITY NOT NULL PRIMARY KEY , " +
+                            "name VARCHAR(255), " +
+                            "role VARCHAR(255))")
+                    .fetch()
+                    .rowsUpdated()
+                    .as(StepVerifier::create)
+                    .expectNextCount(1)
+                    .verifyComplete();
+
+            template.insert(Employee.class)
+                    .using(new Employee("Frodo Baggins", "ring bearer"))
+                    .as(StepVerifier::create)
+                    .expectNextCount(1)
+                    .verifyComplete();
+            template.insert(Employee.class)
+                    .using(new Employee("Samwise Gamgee", "gardener")) //
+                    .as(StepVerifier::create)
+                    .expectNextCount(1)
+                    .verifyComplete();
+            template.insert(Employee.class)
+                    .using(new Employee("Bilbo Baggins", "burglar")) //
+                    .as(StepVerifier::create)
+                    .expectNextCount(1)
+                    .verifyComplete();
         };
     }
 }
