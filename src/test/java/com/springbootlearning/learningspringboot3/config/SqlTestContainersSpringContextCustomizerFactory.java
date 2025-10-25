@@ -1,0 +1,63 @@
+package com.springbootlearning.learningspringboot3.config;
+
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.annotation.AnnotatedElementUtils;
+import org.springframework.test.context.ContextConfigurationAttributes;
+import org.springframework.test.context.ContextCustomizer;
+import org.springframework.test.context.ContextCustomizerFactory;
+import org.springframework.test.context.MergedContextConfiguration;
+
+import java.util.List;
+
+public class SqlTestContainersSpringContextCustomizerFactory implements ContextCustomizerFactory {
+
+    private static SqlTestContainer prodTestContainer;
+
+    @Override
+    public ContextCustomizer createContextCustomizer(Class<?> testClass, List<ContextConfigurationAttributes> configAttributes) {
+        System.out.println("=== ContextCustomizerFactory called for: " + testClass.getName());
+        return new ContextCustomizer() {
+            @Override
+            public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
+                ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+                TestPropertyValues testValues = TestPropertyValues.empty();
+                EmbeddedSQL sqlAnnotation = AnnotatedElementUtils.findMergedAnnotation(testClass, EmbeddedSQL.class);
+                if (null != sqlAnnotation) {
+                    System.out.println("detected the EmbeddedSQL annotation on class " + testClass.getName());
+                    System.out.println("Warming up the sql database");
+                    if (null == prodTestContainer) {
+                        try {
+                            Class<? extends SqlTestContainer> containerClass = (Class<? extends SqlTestContainer>) Class.forName(
+                                    this.getClass().getPackageName() + ".PostgreSqlTestContainer"
+                            );
+                            prodTestContainer = beanFactory.createBean(containerClass);
+                            beanFactory.registerSingleton(containerClass.getName(), prodTestContainer);
+                            /**
+                             * ((DefaultListableBeanFactory)beanFactory).registerDisposableBean(containerClass.getName(), prodTestContainer);
+                             */
+                        } catch (ClassNotFoundException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+                    testValues = testValues.and("spring.datasource.url=" + prodTestContainer.getTestContainer().getJdbcUrl() + "");
+                    testValues = testValues.and("spring.datasource.username=" + prodTestContainer.getTestContainer().getUsername());
+                    testValues = testValues.and("spring.datasource.password=" + prodTestContainer.getTestContainer().getPassword());
+                    testValues = testValues.and("spring.jpa.hibernate.ddl-auto=create-drop");
+                }
+                testValues.applyTo(context);
+            }
+
+            @Override
+            public int hashCode() {
+                return SqlTestContainer.class.getName().hashCode();
+            }
+
+            @Override
+            public boolean equals(Object obj) {
+                return this.hashCode() == obj.hashCode();
+            }
+        };
+    }
+}
