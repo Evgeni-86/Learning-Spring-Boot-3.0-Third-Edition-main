@@ -1,14 +1,93 @@
-### POST request to example server
-POST localhost:8080/login
+### 1. Логин и сохранение токенов
+# @name login
+POST http://localhost:8080/login
 Content-Type: application/json
 
 {
-    "username": "admin",
-    "password": "password"
+  "username": "admin",
+  "password": "password"
 }
-###
 
-### GET request to example server
+> {%
+    client.test("Login successful", function() {
+        client.assert(response.status === 200, "Login failed");
+        client.assert(response.body.accessToken, "No access token");
+        client.assert(response.body.refreshToken, "No refresh token");
+
+        // Сохраняем токены в глобальные переменные
+        client.global.set("access_token", response.body.accessToken);
+        client.global.set("refresh_token", response.body.refreshToken);
+
+        console.log("✅ Login successful");
+        console.log("Access Token:", response.body.accessToken.substring(0, 20) + "...");
+        console.log("Refresh Token:", response.body.refreshToken.substring(0, 20) + "...");
+    });
+%}
+
+### 2. Доступ к защищенной странице с автоматическим токеном
 GET http://localhost:8080/
-Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiYWRtaW4iLCJleHAiOjE3NjE1NzA3MjIsImlhdCI6MTc2MTQ4NDMyMiwicm9sZXMiOlsiUk9MRV9BRE1JTiJdfQ.4IiZe2jAiDYFMkFY398KR5X1Z_1PCE2q0jQV0Z5TViPLeyxZ18mbaPpA7VDFQkiFXrb0G6wYUzMwoPJjdyk9yQ
-###
+Authorization: Bearer {{access_token}}
+
+> {%
+    client.test("Protected access successful", function() {
+        client.assert(response.status === 200, "Protected access failed");
+        console.log("✅ Accessed protected page with access token");
+    });
+%}
+
+### 3. Обновление токенов (автоматически использует сохраненный refresh token)
+# @name refresh
+POST http://localhost:8080/refresh
+Content-Type: application/json
+
+{
+  "refreshToken": "{{refresh_token}}"
+}
+
+> {%
+    client.test("Refresh successful", function() {
+        client.assert(response.status === 200, "Refresh failed");
+        client.assert(response.body.accessToken, "No new access token");
+        client.assert(response.body.refreshToken, "No new refresh token");
+
+        // Обновляем токены
+        client.global.set("access_token", response.body.accessToken);
+        client.global.set("refresh_token", response.body.refreshToken);
+
+        console.log("✅ Tokens refreshed successfully");
+        console.log("New Access Token:", response.body.accessToken.substring(0, 20) + "...");
+        console.log("New Refresh Token:", response.body.refreshToken.substring(0, 20) + "...");
+    });
+%}
+
+### 4. Проверка новых токенов
+GET http://localhost:8080/
+Authorization: Bearer {{access_token}}
+
+> {%
+    client.test("New token works", function() {
+        client.assert(response.status === 200, "New token doesn't work");
+        console.log("✅ New access token works correctly");
+    });
+%}
+
+### 5. Получение информации о пользователе
+GET http://localhost:8080/me
+Authorization: Bearer {{access_token}}
+
+> {%
+    client.test("User info retrieved", function() {
+        client.assert(response.status === 200, "Failed to get user info");
+        console.log("✅ User info:", response.body.username, "Roles:", response.body.roles);
+    });
+%}
+
+### 6. Проверка статуса сервиса
+GET http://localhost:8080/status
+
+> {%
+    client.test("Service status", function() {
+        client.assert(response.status === 200, "Service status check failed");
+        console.log("✅ Service status:", response.body.message);
+    });
+%}

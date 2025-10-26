@@ -36,8 +36,8 @@ public class AppConfigProperties {
 
             public static class Jwt {
                 private String base64Secret;
-                private long tokenValidityInSeconds = 1800L;
-                private long tokenValidityInSecondsForRememberMe = 2592000L;
+                private long accessTokenValidityInSeconds = 1800L;
+                private long refreshTokenValidityInSeconds = 18000L;
 
                 public String getBase64Secret() {
                     return base64Secret;
@@ -47,20 +47,20 @@ public class AppConfigProperties {
                     this.base64Secret = base64Secret;
                 }
 
-                public long getTokenValidityInSeconds() {
-                    return tokenValidityInSeconds;
+                public long getAccessTokenValidityInSeconds() {
+                    return accessTokenValidityInSeconds;
                 }
 
-                public void setTokenValidityInSeconds(long tokenValidityInSeconds) {
-                    this.tokenValidityInSeconds = tokenValidityInSeconds;
+                public void setAccessTokenValidityInSeconds(long accessTokenValidityInSeconds) {
+                    this.accessTokenValidityInSeconds = accessTokenValidityInSeconds;
                 }
 
-                public long getTokenValidityInSecondsForRememberMe() {
-                    return tokenValidityInSecondsForRememberMe;
+                public long getRefreshTokenValidityInSeconds() {
+                    return refreshTokenValidityInSeconds;
                 }
 
-                public void setTokenValidityInSecondsForRememberMe(long tokenValidityInSecondsForRememberMe) {
-                    this.tokenValidityInSecondsForRememberMe = tokenValidityInSecondsForRememberMe;
+                public void setRefreshTokenValidityInSeconds(long refreshTokenValidityInSeconds) {
+                    this.refreshTokenValidityInSeconds = refreshTokenValidityInSeconds;
                 }
             }
         }
