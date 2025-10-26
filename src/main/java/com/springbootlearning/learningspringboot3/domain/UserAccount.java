@@ -28,7 +28,7 @@ public class UserAccount {
     private List<GrantedAuthority> authorities =
             new ArrayList<>();
 
-    protected UserAccount() {
+    public UserAccount() {
     }
 
     public UserAccount(String username, String password, String... authorities) {
@@ -43,7 +43,7 @@ public class UserAccount {
     public UserDetails asUser() {
         return User.builder()
                 .username(getUsername())
-                .password("{noop}" + getPassword())
+                .password(getPassword())
                 .authorities(getAuthorities())
                 .build();
     }

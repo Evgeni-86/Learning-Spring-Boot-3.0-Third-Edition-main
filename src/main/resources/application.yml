@@ -1,0 +1,39 @@
+app:
+  config:
+    general:
+      security:
+        content-security-policy: "default-src 'self'; frame-src 'self' data:; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://storage.googleapis.com; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self' data:"
+        authentication:
+          jwt:
+            base64-secret: bXktc2VjcmV0LWtleS13aGljaC1zaG91bGQtYmUtY2hhbmdlZC1pbi1wcm9kdWN0aW9uLWFuZC1iZS1iYXNlNjQtZW5jb2RlZAo=
+            token-validity-in-seconds: 86400
+            token-validity-in-seconds-for-remember-me: 2592000
+
+
+    header: Greetings Learning Spring Boot 3.0 fans!
+    intro: Check out this page hosted from YAML
+    users:
+      -
+        username: alice
+        password: password
+        authorities:
+          - ROLE_USER
+      -
+        username: bob
+        password: password
+        authorities:
+          - ROLE_USER
+      -
+        username: admin
+        password: password
+        authorities:
+          - ROLE_ADMIN
+
+logging:
+  level:
+    org.springframework.security: TRACE
+
+spring:
+  mustache:
+    servlet:
+      expose-request-attributes: true

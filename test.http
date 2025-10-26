@@ -1,0 +1,14 @@
+### POST request to example server
+POST localhost:8080/login
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "password"
+}
+###
+
+### GET request to example server
+GET http://localhost:8080/
+Authorization: Bearer eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJzZWxmIiwic3ViIjoiYWRtaW4iLCJleHAiOjE3NjE1NzA3MjIsImlhdCI6MTc2MTQ4NDMyMiwicm9sZXMiOlsiUk9MRV9BRE1JTiJdfQ.4IiZe2jAiDYFMkFY398KR5X1Z_1PCE2q0jQV0Z5TViPLeyxZ18mbaPpA7VDFQkiFXrb0G6wYUzMwoPJjdyk9yQ
+###

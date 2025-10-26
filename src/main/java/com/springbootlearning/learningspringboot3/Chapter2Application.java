@@ -1,11 +1,12 @@
 package com.springbootlearning.learningspringboot3;
 
 import com.springbootlearning.learningspringboot3.config.AppConfig;
+import com.springbootlearning.learningspringboot3.config.AppConfigProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-@EnableConfigurationProperties(AppConfig.class)
+@EnableConfigurationProperties({AppConfig.class, AppConfigProperties.class})
 @SpringBootApplication
 public class Chapter2Application {
 

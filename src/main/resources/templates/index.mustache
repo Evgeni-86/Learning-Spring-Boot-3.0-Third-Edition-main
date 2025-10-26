@@ -9,7 +9,6 @@
 </ul>
 
 <form action="/logout" method="post">
-    <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
     <button type="submit">Logout</button>
 </form>
 
@@ -18,7 +17,6 @@
 <form action="/search" method="post">
   <label for="value">Search:</label>
   <input type="text" name="value">
-  <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
   <button type="submit">Search</button>
 </form>
 
@@ -30,7 +28,6 @@
   {{#videos}}
     <li>{{name}}</li>
     <form action="/delete/videos/{{id}}" method="post">
-        <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
         <button type="submit">Delete</button>
     </form>
   {{/videos}}
@@ -38,7 +35,6 @@
   <form action="/new-video" method="post">
     <input type="text" name="name">
     <input type="text" name="description">
-    <input type="hidden" name="{{_csrf.parameterName}}" value="{{_csrf.token}}">
     <button type="submit">Submit</button>
   </form>
 </ul>
